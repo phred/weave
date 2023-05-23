@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, options, ... }:
 
 {
   imports =
@@ -111,6 +111,19 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "22.11"; # Did you read the comment?
+  nix.package = pkgs.nixFlakes;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';  
+
+  # # Without any `nix.nixPath` entry:
+  # nix.nixPath =
+  #   # Prepend default nixPath values.
+  #   options.nix.nixPath.default ++
+  #   # Append our nixpkgs-overlays.
+  #   [ "nixpkgs-overlays=/etc/nixos/overlays/" ]
+  # ;
+  nixpkgs.overlays = [ (import /etc/nixos/overlays/unifi.nix) ];
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
     "unifi-controller"
@@ -118,10 +131,7 @@
   services.unifi = {
     enable = true;
     openFirewall = true;
-    unifiPackage = generic {
-      version = "7.3.83";
-      sha256 = "";
-    };
+    unifiPackage = pkgs.unifiCustom;
   };
 }
 
