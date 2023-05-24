@@ -132,6 +132,7 @@
     enable = true;
     openFirewall = true;
     unifiPackage = pkgs.unifiCustom;
+    jrePackage = pkgs.jdk11;
   };
 }
 
