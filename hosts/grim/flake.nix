@@ -13,13 +13,16 @@
       # List packages installed in system profile. To search by name, run:
       # $ nix-env -qaP | grep wget
       environment.systemPackages = with pkgs; [
-	jq
+      	jq
         fossil
-	go-task
-	lr
-	ripgrep
-	tmux
-	flyctl
+      	go-task
+      	lr
+      	ripgrep
+      	# tmux
+      	flyctl
+        fish
+        jless
+        wezterm
       ];
 
       # Auto upgrade nix package and the daemon service.
@@ -42,16 +45,25 @@
 
       # The platform the configuration will be used on.
       nixpkgs.hostPlatform = "aarch64-darwin";
+
+      networking = {
+        localHostName="Grim";
+        hostName="grim.auroch-bebop.ts.net";
+      };
+
+      users.users.fred.packages = with pkgs; [
+        # wezterm
+      ];
     };
   in
   {
     # Build darwin flake using:
-    # $ darwin-rebuild build --flake .#simple
-    darwinConfigurations."Grim" = nix-darwin.lib.darwinSystem {
+    # $ darwin-rebuild build --flake .#grim
+    darwinConfigurations."grim" = nix-darwin.lib.darwinSystem {
       modules = [ configuration ];
     };
 
     # Expose the package set, including overlays, for convenience.
-    darwinPackages = self.darwinConfigurations."Grim".pkgs;
+    # darwinPackages = self.darwinConfigurations."grim".pkgs;
   };
 }
